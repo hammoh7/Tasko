@@ -1,5 +1,5 @@
 import { FormPopover } from "@/components/form/popover";
-import { Hint } from "@/components/hint";
+import { Label } from "@/components/label";
 import { database } from "@/lib/database";
 import { auth } from "@clerk/nextjs";
 import { HelpCircle, User } from "lucide-react";
@@ -22,12 +22,12 @@ export const BoardList = async () => {
           >
             <p className="text-md">Create</p>
             <span className="text-xs">5 remaining</span>
-            <Hint
+            <Label
               sideOffset={40}
               description={`Free workspaces can have upto 5 open boards. For unlimited boards upgrade this workspace`}
             >
               <HelpCircle className="absolute bottom-2 right-2 h-[14px] w-[14px]" />
-            </Hint>
+            </Label>
           </div>
         </FormPopover>
       </div>
