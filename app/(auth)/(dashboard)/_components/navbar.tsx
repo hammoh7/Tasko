@@ -16,18 +16,18 @@ const DashNav = () => {
           </p>
         </div>
         <FormPopover align="start" side="bottom" sideOffset={18}>
-          <FormPopover>
-            <Button
-              size="sm"
-              className="rounded-sm hidden md:block h-auto py-1.5 px-2 ml-5"
-            >
-              Create
-            </Button>
-          </FormPopover>
+          <Button
+            size="sm"
+            className="rounded-sm hidden md:block h-auto py-1.5 px-2 ml-5"
+          >
+            Create
+          </Button>
         </FormPopover>
-        <Button size="sm" className="rounded-sm block md:hidden">
-          <PlusCircle className="h-4 w-4" />
-        </Button>
+        <FormPopover>
+          <Button size="sm" className="rounded-sm block md:hidden">
+            <PlusCircle className="h-4 w-4" />
+          </Button>
+        </FormPopover>
       </div>
       <div className="ml-auto flex items-center gap-x-2">
         <OrganizationSwitcher
