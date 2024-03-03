@@ -1,5 +1,6 @@
 import { FormPopover } from "@/components/form/popover";
 import { Label } from "@/components/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { database } from "@/lib/database";
 import { auth } from "@clerk/nextjs";
 import { HelpCircle, User } from "lucide-react";
@@ -7,7 +8,18 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const BoardList = async () => {
-
+  const { orgId } = auth();
+  if (!orgId) {
+    return redirect("/select-org");
+  }
+  const boards = await database.board.findMany({
+    where: {
+      orgId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
   return (
     <div className="space-y-4">
       <div className="flex items-center font-semibold text-lg text-zinc-800">
@@ -15,6 +27,17 @@ export const BoardList = async () => {
         Boards
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {boards.map((board) => (
+          <Link
+            href={`/board/${board.id}`}
+            key={board.id}
+            style={{ backgroundImage: `url(${board.imageThumbUrl})` }}
+            className="group relative aspect-video bg-no-repeat bg-center bg-cover bg-red-400 rounded-md h-full w-full p-2 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition" />
+            <p className="relative font-semibold text-white">{board.title}</p>
+          </Link>
+        ))}
         <FormPopover sideOffset={10} side="right">
           <div
             role="button"
@@ -34,4 +57,15 @@ export const BoardList = async () => {
     </div>
   );
 };
-// 05:10:52
+
+BoardList.Skeleton = function SkeletonBoardList() {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+    </div>
+  )
+}
