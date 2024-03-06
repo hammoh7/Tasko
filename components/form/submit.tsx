@@ -8,7 +8,7 @@ interface FormSubmitProps {
     children: React.ReactNode;
     disabled?: boolean;
     className?: string;
-    variant?: "secondary";
+    variant?: "secondary" | "ghost";
 }
 
 export const FormSubmit = ({
