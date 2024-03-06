@@ -2,7 +2,7 @@
 
 import { PlusCircle, X } from "lucide-react";
 import { Outliner } from "./outliner";
-import { ElementRef, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import { FormInput } from "@/components/form/input";
 import { useParams, useRouter } from "next/navigation";
@@ -32,14 +32,14 @@ export const ListForm = () => {
 
   const { execute, fieldErrors } = useAction(createList, {
     onSuccess: (data) => {
-      toast.success(`List created!`)
+      toast.success(`List created!`);
       disableEditing();
       router.refresh();
     },
     onError: (error) => {
       toast.error(error);
-    }
-  })
+    },
+  });
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -55,10 +55,10 @@ export const ListForm = () => {
     const boardId = formData.get("boardId") as string;
 
     execute({
-      title, 
+      title,
       boardId,
-    })
-  }
+    });
+  };
 
   if (isEditing) {
     return (
@@ -75,17 +75,11 @@ export const ListForm = () => {
             className="text-sm px-2 py-2 h-6 font-medium border-transparent hover:border-input focus:border-input transition"
             placeholder="Title"
           />
-          <input 
-            hidden
-            value={params.boardId}
-            name="boardId"
-          />
+          <input hidden value={params.boardId} name="boardId" />
           <div className="flex items-center gap-x-1">
-            <FormSubmit>
-                Add
-            </FormSubmit>
-            <Button onClick={disableEditing} size="sm" variant="ghost">
-                <X className="h-4 w-4" />
+            <FormSubmit>Add</FormSubmit>
+            <Button onClick={disableEditing} size="sm" variant="ghost" className="h-auto w-auto p-2 ml-auto">
+              <X className="h-4 w-4" />
             </Button>
           </div>
         </form>
@@ -98,9 +92,9 @@ export const ListForm = () => {
       <form className="w-full p-3 rounded-md bg-white space-y-4 shadow-md">
         <button
           onClick={enableEditing}
-          className="w-full rounded-md bg-white/70 hover:bg-white/35 transition p-3 flex items-center font-medium text-md"
+          className="w-full rounded-md bg-white hover:bg-gray-100 transition p-1 flex items-center font-medium text-md"
         >
-          <PlusCircle className="h-4 w-4 mr-2" />
+          <PlusCircle className="h-5 w-5 mr-2" />
           Add a list
         </button>
       </form>
