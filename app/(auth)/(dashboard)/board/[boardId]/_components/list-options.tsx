@@ -44,18 +44,12 @@ export const ListOptions = ({ data, addCard }: ListOptionsProps) => {
     },
   });
 
-  const onDelete = (formData: FormData) => {
-    const id = formData.get("id") as string;
-    const boardId = formData.get("id") as string;
-
-    executeDelete({ id, boardId });
+  const onDelete = () => {
+    executeDelete({ id: data.id, boardId: data.boardId });
   };
 
-  const onCopy = (formData: FormData) => {
-    const id = formData.get("id") as string;
-    const boardId = formData.get("id") as string;
-
-    executeCopy({ id, boardId });
+  const onCopy = () => {
+    executeCopy({ id: data.id, boardId: data.boardId });
   };
 
   return (
@@ -100,7 +94,6 @@ export const ListOptions = ({ data, addCard }: ListOptionsProps) => {
             Copy
           </FormSubmit>
         </form>
-        <Separator />
         <Separator />
         <form action={onDelete}>
           <input hidden name="id" id="id" value={data.id} />
