@@ -30,7 +30,6 @@ const createHandler = async (
   const { title, boardId } = data;
 
   let list;
-
   try {
     const board = await database.board.findUnique({
       where: {
@@ -146,11 +145,9 @@ export const deleteList = createSafeAction(DeleteList, deleteHandler);
 
 
 
-const copyHandler = async (
-  data: CopyInputType
-): Promise<CopyReturnType> => {
+const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
   const { userId, orgId } = auth();
-
+  
   if (!userId || !orgId) {
     return {
       error: "Unauthorized!",
@@ -158,55 +155,71 @@ const copyHandler = async (
   }
   const { id, boardId } = data;
 
-  let list;
   try {
     const listCopy = await database.list.findUnique({
       where: {
-        id, 
+        id,
         boardId,
         board: {
           orgId,
-        }
+        },
       },
       include: {
         cards: true,
-      }
-    })
+      },
+    });
     if (!listCopy) {
-      return { error: "List not found" }
+      return { error: "List not found" };
     }
     const lastList = await database.list.findFirst({
       where: { boardId },
       orderBy: { order: "desc" },
-      select: { order: true }
-    })
+      select: { order: true },
+    });
+
     const newOrder = lastList ? lastList.order + 1 : 1;
-    list = await database.list.create({
-      data: {
-        boardId: listCopy.boardId,
-        title: `${listCopy.title} - Copy`,
-        order: newOrder,
-        cards: {
-          createMany: {
-            data: listCopy.cards.map((card) => ({
-              title: card.title,
-              description: card.description,
-              order: card.order,
-            }))
-          }
-        }
-      },
-      include: {
-        cards: true
-      }
-    })
-  } catch (error) {
+
+    let createdList;
+    if (listCopy.cards && listCopy.cards.length > 0) {
+      createdList = await database.list.create({
+        data: {
+          boardId: listCopy.boardId,
+          title: `${listCopy.title} - Copy`,
+          order: newOrder,
+          cards: {
+            createMany: {
+              data: listCopy.cards.map((card) => ({
+                title: card.title,
+                description: card.description,
+                order: card.order,
+              })),
+            },
+          },
+        },
+        include: {
+          cards: true,
+        },
+      });
+    } else {
+      createdList = await database.list.create({
+        data: {
+          boardId: listCopy.boardId,
+          title: `${listCopy.title} - Copy`,
+          order: newOrder,
+        },
+      });
+    }
+    revalidatePath(`/board/${boardId}`);
+    return { data: createdList };
+  } catch (error: any) {
+    console.error("Copy handler error:", error);
     return {
-      error: "Failed to copy!",
+      error: `Failed to copy: ${(error as Error).message}`,
     };
   }
-  revalidatePath(`/board/${boardId}`);
-  return { data: list };
 };
 
 export const copyList = createSafeAction(CopyList, copyHandler);
+
+
+
