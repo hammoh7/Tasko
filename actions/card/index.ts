@@ -4,12 +4,14 @@ import { auth } from "@clerk/nextjs";
 import {
   CreateInputType,
   CreateReturnType,
+  UpdateInputType,
   UpdateOrderInputType,
   UpdateOrderReturnType,
+  UpdateReturnType,
 } from "./types";
 import { database } from "@/lib/database";
 import { revalidatePath } from "next/cache";
-import { CreateCard, UpdateCardOrder } from "./schema";
+import { CreateCard, UpdateCard, UpdateCardOrder } from "./schema";
 import { createSafeAction } from "@/lib/actions";
 
 const createHandler = async (
@@ -64,6 +66,44 @@ const createHandler = async (
 };
 
 export const createCard = createSafeAction(CreateCard, createHandler);
+
+const updateHandler = async (
+  data: UpdateInputType
+): Promise<UpdateReturnType> => {
+  const { userId, orgId } = auth();
+
+  if (!userId || !orgId) {
+    return {
+      error: "Unauthorized!",
+    };
+  }
+  const { id, boardId, ...values } = data;
+
+  let card;
+  try {
+    card = await database.card.update({
+      where: {
+        id,
+        list: {
+          board: {
+            orgId,
+          },
+        },
+      },
+      data: {
+        ...values,
+      },
+    });
+  } catch (error) {
+    return {
+      error: "Failed to update!",
+    };
+  }
+  revalidatePath(`/board/${boardId}`);
+  return { data: card };
+};
+
+export const updateCard = createSafeAction(UpdateCard, updateHandler);
 
 const updateCardHandler = async (
   data: UpdateOrderInputType
