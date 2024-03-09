@@ -9,11 +9,19 @@ import {
   DeleteInputType,
   DeleteReturnType,
   UpdateInputType,
+  UpdateOrderInputType,
+  UpdateOrderReturnType,
   UpdateReturnType,
 } from "./types";
 import { database } from "@/lib/database";
 import { revalidatePath } from "next/cache";
-import { CopyList, CreateList, DeleteList, UpdateList } from "./schema";
+import {
+  CopyList,
+  CreateList,
+  DeleteList,
+  UpdateList,
+  UpdateListOrder,
+} from "./schema";
 import { createSafeAction } from "@/lib/actions";
 
 const createHandler = async (
@@ -143,11 +151,9 @@ const deleteHandler = async (
 
 export const deleteList = createSafeAction(DeleteList, deleteHandler);
 
-
-
 const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
   const { userId, orgId } = auth();
-  
+
   if (!userId || !orgId) {
     return {
       error: "Unauthorized!",
@@ -221,5 +227,44 @@ const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
 
 export const copyList = createSafeAction(CopyList, copyHandler);
 
+const updateListHandler = async (
+  data: UpdateOrderInputType
+): Promise<UpdateOrderReturnType> => {
+  const { userId, orgId } = auth();
 
+  if (!userId || !orgId) {
+    return {
+      error: "Unauthorized!",
+    };
+  }
+  const { items, boardId } = data;
 
+  let lists;
+  try {
+    const transaction = items.map((list) =>
+      database.list.update({
+        where: {
+          id: list.id,
+          board: {
+            orgId,
+          },
+        },
+        data: {
+          order: list.order,
+        },
+      })
+    );
+    lists = await database.$transaction(transaction);
+  } catch (error) {
+    return {
+      error: "Failed to reorder!",
+    };
+  }
+  revalidatePath(`/board/${boardId}`);
+  return { data: lists };
+};
+
+export const updateListOrder = createSafeAction(
+  UpdateListOrder,
+  updateListHandler
+);
