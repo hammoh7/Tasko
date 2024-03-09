@@ -12,7 +12,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useAction } from "@/hooks/actions";
 import { List } from "@prisma/client";
-import { MoreVertical, X } from "lucide-react";
+import { CopyIcon, MoreVertical, Trash2, X } from "lucide-react";
 import { ElementRef, useRef } from "react";
 import { toast } from "sonner";
 
@@ -77,13 +77,6 @@ export const ListOptions = ({ data, addCard }: ListOptionsProps) => {
             <X className="h-4 w-4" />
           </Button>
         </PopoverClose>
-        <Button
-          variant="ghost"
-          onClick={addCard}
-          className="w-full h-auto rounded-none p-2 px-4 justify-start font-normal text-sm"
-        >
-          Add Card
-        </Button>
         <form action={onCopy}>
           <input hidden name="id" id="id" value={data.id} />
           <input hidden name="boardId" id="boardId" value={data.boardId} />
@@ -91,6 +84,7 @@ export const ListOptions = ({ data, addCard }: ListOptionsProps) => {
             variant="ghost"
             className="w-full h-auto rounded-none p-2 px-4 justify-start font-normal text-sm"
           >
+            <CopyIcon className="h-4 w-4 mr-2" />
             Copy
           </FormSubmit>
         </form>
@@ -102,6 +96,7 @@ export const ListOptions = ({ data, addCard }: ListOptionsProps) => {
             variant="ghost"
             className="w-full h-auto rounded-none p-2 px-4 justify-start font-normal text-sm"
           >
+            <Trash2 className="h-4 w-4 mr-2" />
             Delete
           </FormSubmit>
         </form>
