@@ -2,8 +2,12 @@
 
 import { auth } from "@clerk/nextjs";
 import {
+  CopyInputType,
+  CopyReturnType,
   CreateInputType,
   CreateReturnType,
+  DeleteInputType,
+  DeleteReturnType,
   UpdateInputType,
   UpdateOrderInputType,
   UpdateOrderReturnType,
@@ -11,7 +15,13 @@ import {
 } from "./types";
 import { database } from "@/lib/database";
 import { revalidatePath } from "next/cache";
-import { CreateCard, UpdateCard, UpdateCardOrder } from "./schema";
+import {
+  CopyCard,
+  CreateCard,
+  DeleteCard,
+  UpdateCard,
+  UpdateCardOrder,
+} from "./schema";
 import { createSafeAction } from "@/lib/actions";
 
 const createHandler = async (
@@ -149,3 +159,91 @@ export const updateCardOrder = createSafeAction(
   UpdateCardOrder,
   updateCardHandler
 );
+
+const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
+  const { userId, orgId } = auth();
+
+  if (!userId || !orgId) {
+    return {
+      error: "Unauthorized!",
+    };
+  }
+  const { id, boardId } = data;
+
+  let card;
+  try {
+    const cardCopy = await database.card.findUnique({
+      where: {
+        id,
+        list: {
+          board: {
+            orgId,
+          },
+        },
+      },
+    });
+    if (!cardCopy) {
+      return { error: "Card not found!" };
+    }
+
+    const lastCard = await database.card.findFirst({
+      where: { listId: cardCopy.listId },
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+
+    const newOrder = lastCard ? lastCard.order + 1 : 1;
+
+    card = await database.card.create({
+      data: {
+        title: `${cardCopy.title} - Copy`,
+        description: cardCopy.description,
+        order: newOrder,
+        listId: cardCopy.listId,
+      },
+    });
+  } catch (error) {
+    return {
+      error: `Failed to copy: ${(error as Error).message}`,
+    };
+  }
+  revalidatePath(`/board/${boardId}`);
+  return { data: card };
+};
+
+export const copyCard = createSafeAction(CopyCard, copyHandler);
+
+const deleteHandler = async (
+  data: DeleteInputType
+): Promise<DeleteReturnType> => {
+  const { userId, orgId } = auth();
+
+  if (!userId || !orgId) {
+    return {
+      error: "Unauthorized!",
+    };
+  }
+  const { id, boardId } = data;
+
+  let card;
+  try {
+    card = await database.card.delete({
+      where: {
+        id,
+        list: {
+          board: {
+            orgId,
+          },
+        },
+      },
+    });
+  } catch (error) {
+    return {
+      error: `Failed to delete: ${(error as Error).message}`,
+    };
+  }
+  revalidatePath(`/board/${boardId}`);
+  return { data: card };
+};
+
+export const deleteCard = createSafeAction(DeleteCard, deleteHandler);
