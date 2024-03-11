@@ -23,6 +23,8 @@ import {
   UpdateListOrder,
 } from "./schema";
 import { createSafeAction } from "@/lib/actions";
+import { createActivity } from "@/lib/activity";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 const createHandler = async (
   data: CreateInputType
@@ -206,6 +208,12 @@ const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
           cards: true,
         },
       });
+      await createActivity({
+        entityTitle: listCopy.title,
+        entityId: listCopy.id, 
+        entityType: ENTITY_TYPE.CARD,
+        action: ACTION.CREATE,
+      })
     } else {
       createdList = await database.list.create({
         data: {
