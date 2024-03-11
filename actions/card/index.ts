@@ -113,6 +113,12 @@ const updateHandler = async (
         ...values,
       },
     });
+    await createActivity({
+      entityTitle: card.title,
+      entityId: card.id,
+      entityType: ENTITY_TYPE.CARD,
+      action: ACTION.UPDATE,
+    });
   } catch (error) {
     return {
       error: "Failed to update!",
@@ -211,7 +217,6 @@ const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
         listId: cardCopy.listId,
       },
     });
-
     await createActivity({
       entityTitle: card.title,
       entityId: card.id, 
@@ -252,6 +257,12 @@ const deleteHandler = async (
           },
         },
       },
+    });
+    await createActivity({
+      entityTitle: card.title,
+      entityId: card.id,
+      entityType: ENTITY_TYPE.CARD,
+      action: ACTION.DELETE,
     });
   } catch (error) {
     return {
