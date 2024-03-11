@@ -71,9 +71,15 @@ const createHandler = async (
         order: newOrder,
       },
     });
+    await createActivity({
+      entityTitle: list.title,
+      entityId: list.id,
+      entityType: ENTITY_TYPE.LIST,
+      action: ACTION.CREATE,
+    });
   } catch (error) {
     return {
-      error: "Failed to update!",
+      error: "Failed to create!",
     };
   }
   revalidatePath(`/board/${boardId}`);
@@ -107,6 +113,12 @@ const updateHandler = async (
       data: {
         title,
       },
+    });
+    await createActivity({
+      entityTitle: list.title,
+      entityId: list.id,
+      entityType: ENTITY_TYPE.CARD,
+      action: ACTION.UPDATE,
     });
   } catch (error) {
     return {
@@ -142,6 +154,12 @@ const deleteHandler = async (
         },
       },
     });
+    await createActivity({
+      entityTitle: list.title,
+      entityId: list.id,
+      entityType: ENTITY_TYPE.CARD,
+      action: ACTION.UPDATE,
+    });
   } catch (error) {
     return {
       error: "Failed to delete!",
@@ -163,6 +181,7 @@ const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
   }
   const { id, boardId } = data;
 
+  let createdList;
   try {
     const listCopy = await database.list.findUnique({
       where: {
@@ -187,50 +206,38 @@ const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
 
     const newOrder = lastList ? lastList.order + 1 : 1;
 
-    let createdList;
-    if (listCopy.cards && listCopy.cards.length > 0) {
-      createdList = await database.list.create({
-        data: {
-          boardId: listCopy.boardId,
-          title: `${listCopy.title} - Copy`,
-          order: newOrder,
-          cards: {
-            createMany: {
-              data: listCopy.cards.map((card) => ({
-                title: card.title,
-                description: card.description,
-                order: card.order,
-              })),
-            },
+    createdList = await database.list.create({
+      data: {
+        boardId: listCopy.boardId,
+        title: `${listCopy.title} - Copy`,
+        order: newOrder,
+        cards: {
+          createMany: {
+            data: listCopy.cards.map((card) => ({
+              title: card.title,
+              description: card.description,
+              order: card.order,
+            })),
           },
         },
-        include: {
-          cards: true,
-        },
-      });
-      await createActivity({
-        entityTitle: listCopy.title,
-        entityId: listCopy.id, 
-        entityType: ENTITY_TYPE.CARD,
-        action: ACTION.CREATE,
-      })
-    } else {
-      createdList = await database.list.create({
-        data: {
-          boardId: listCopy.boardId,
-          title: `${listCopy.title} - Copy`,
-          order: newOrder,
-        },
-      });
-    }
-    revalidatePath(`/board/${boardId}`);
-    return { data: createdList };
+      },
+      include: {
+        cards: true,
+      },
+    });
+    await createActivity({
+      entityTitle: listCopy.title,
+      entityId: listCopy.id,
+      entityType: ENTITY_TYPE.LIST,
+      action: ACTION.CREATE,
+    });
   } catch (error: any) {
-    console.error("Copy handler error:", error);
     return {
       error: `Failed to copy: ${(error as Error).message}`,
     };
   }
+  revalidatePath(`/board/${boardId}`);
+  return { data: createdList };
 };
 
 export const copyList = createSafeAction(CopyList, copyHandler);
