@@ -66,6 +66,7 @@ model Activity {
   action        ACTION
   entityId      String
   entityType    ENTITY_TYPE
+  entityTitle   String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt    
 }
