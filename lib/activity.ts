@@ -33,6 +33,6 @@ export const createActivity = async (props: ActivityProps) => {
             }
         })
     } catch(error) {
-
+        console.log("[Activity_error]", error);
     }
 }

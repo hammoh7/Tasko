@@ -6,9 +6,9 @@ export const activityMessage = (log: Activity) => {
     switch (action) {
         case ACTION.CREATE: 
           return `created ${entityType.toLowerCase()} "${entityTitle}"`;
-        case ACTION.CREATE: 
+        case ACTION.UPDATE: 
           return `updated ${entityType.toLowerCase()} "${entityTitle}"`;
-        case ACTION.CREATE: 
+        case ACTION.DELETE: 
           return `deleted ${entityType.toLowerCase()} "${entityTitle}"`;
         default: 
           return `unknown action ${entityType.toLowerCase()} "${entityTitle}"`;
