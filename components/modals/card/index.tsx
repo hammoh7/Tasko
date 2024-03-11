@@ -22,7 +22,7 @@ export const CardModal = () => {
   });
 
   const { data: activityData } = useQuery<Activity[]>({
-    queryKey: ["card", id],
+    queryKey: ["card-logs", id],
     queryFn: () => fetcher(`/api/cards/${id}/logs`),
   });
 

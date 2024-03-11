@@ -24,7 +24,7 @@ export const ActivityItem = ({
                     }
                 </p>
                 <p className="text-sm text-muted-foreground">
-                    {format(new Date(data.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                    {format(new Date(data.createdAt), "MMMM d, yyyy 'at' h:mm a")}
                 </p>
             </div>
         </li>
