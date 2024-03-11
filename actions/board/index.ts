@@ -14,6 +14,8 @@ import {
   UpdateReturnType,
 } from "./types";
 import { redirect } from "next/navigation";
+import { createActivity } from "@/lib/activity";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 const createHandler = async (
   data: CreateInputType
@@ -55,6 +57,12 @@ const createHandler = async (
         imageLinkHTML,
       },
     });
+    await createActivity({
+      entityTitle: board.title,
+      entityId: board.id,
+      entityType: ENTITY_TYPE.BOARD,
+      action: ACTION.CREATE,
+    });
   } catch (error) {
     return {
       error: "Failed to create!",
@@ -89,6 +97,12 @@ const updateHandler = async (
         title,
       },
     });
+    await createActivity({
+      entityTitle: board.title,
+      entityId: board.id,
+      entityType: ENTITY_TYPE.BOARD,
+      action: ACTION.UPDATE,
+    });
   } catch (error) {
     return {
       error: "Failed to update!",
@@ -99,9 +113,6 @@ const updateHandler = async (
 };
 
 export const updateBoard = createSafeAction(UpdateBoard, updateHandler);
-
-
-
 
 const deleteHandler = async (
   data: DeleteInputType
@@ -123,13 +134,19 @@ const deleteHandler = async (
         orgId,
       },
     });
+    await createActivity({
+      entityTitle: board.title,
+      entityId: board.id,
+      entityType: ENTITY_TYPE.BOARD,
+      action: ACTION.DELETE,
+    });
   } catch (error) {
     return {
       error: "Failed to delete!",
     };
   }
   revalidatePath(`/organizations/${orgId}`);
-  redirect(`/organizations/${orgId}`)
+  redirect(`/organizations/${orgId}`);
 };
 
 export const deleteBoard = createSafeAction(DeleteBoard, deleteHandler);
