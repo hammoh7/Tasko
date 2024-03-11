@@ -23,6 +23,8 @@ import {
   UpdateCardOrder,
 } from "./schema";
 import { createSafeAction } from "@/lib/actions";
+import { createActivity } from "@/lib/activity";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 const createHandler = async (
   data: CreateInputType
@@ -66,6 +68,13 @@ const createHandler = async (
         order: newCard,
       },
     });
+
+    await createActivity({
+      entityId: card.id,
+      entityTitle: card.title,
+      entityType: ENTITY_TYPE.CARD,
+      action: ACTION.CREATE,
+    })
   } catch (error) {
     return {
       error: "Failed to update!",
@@ -202,6 +211,13 @@ const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
         listId: cardCopy.listId,
       },
     });
+
+    await createActivity({
+      entityTitle: card.title,
+      entityId: card.id, 
+      entityType: ENTITY_TYPE.CARD,
+      action: ACTION.CREATE,
+    })
   } catch (error) {
     return {
       error: `Failed to copy: ${(error as Error).message}`,
