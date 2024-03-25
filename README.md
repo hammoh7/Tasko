@@ -1,5 +1,4 @@
 # Tasko
-## Development in Progress
 
 ### Getting Started
 1. Clone the project:
