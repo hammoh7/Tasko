@@ -25,7 +25,7 @@ const Home = () => {
       </div>
       <div className="text-sm md:text-md text-zinc-800 mt-5 max-w-sm md:max-w-xl text-center mx-auto">
         A collaborative project management platform that brings clarity to your
-        team's tasks. Create boards, organize lists, and effortlessly manage
+        team&apos;s tasks. Create boards, organize lists, and effortlessly manage
         projects with intuitive cards. Boost productivity, foster collaboration,
         and stay on top of deadlines.
       </div>
