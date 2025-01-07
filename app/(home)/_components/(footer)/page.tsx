@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ClipboardCheck } from "lucide-react";
 import Link from "next/link";
 
-export const Footer = () => {
+const Footer = () => {
   return (
     <footer className="bg-white fixed bottom-0 w-full p-4 border-t">
       <div className="md:max-w-screen-2xl mx-auto flex items-center w-full justify-between space-x-8">
@@ -25,3 +25,5 @@ export const Footer = () => {
     </footer>
   );
 };
+
+export default Footer;
