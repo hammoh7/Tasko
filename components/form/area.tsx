@@ -77,4 +77,4 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   }
 );
 
-Textarea.displayName = "TextArea";
+TextArea.displayName = "TextArea";
