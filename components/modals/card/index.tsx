@@ -18,12 +18,22 @@ export const CardModal = () => {
 
   const { data: cardData } = useQuery<CardsOfList>({
     queryKey: ["card", id],
-    queryFn: () => fetcher(`/api/cards/${id}`),
+    queryFn: () => {
+      if (!id) {
+        return Promise.reject("Card ID is missing");
+      }
+      return fetcher(`/api/cards/${id}`);
+    },
   });
 
   const { data: activityData } = useQuery<Activity[]>({
     queryKey: ["card-logs", id],
-    queryFn: () => fetcher(`/api/cards/${id}/logs`),
+    queryFn: () => {
+      if (!id) {
+        return Promise.reject("Card ID is missing");
+      }
+      return fetcher(`/api/cards/${id}/logs`);
+    },
   });
 
   return (
@@ -33,20 +43,19 @@ export const CardModal = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 md:gap-4">
           <div className="col-span-3">
             <div className="w-full space-y-5">
-              {!cardData
-                ? <Description.Skeleton />
-                : <Description data={cardData} />
-              }
-              {!activityData
-                ? <ActivityData.Skeleton />
-                : <ActivityData items={activityData} />
-              }
+              {!cardData ? (
+                <Description.Skeleton />
+              ) : (
+                <Description data={cardData} />
+              )}
+              {!activityData ? (
+                <ActivityData.Skeleton />
+              ) : (
+                <ActivityData items={activityData} />
+              )}
             </div>
           </div>
-          {!cardData
-            ? <Actions.Skeleton />
-            : <Actions data={cardData} />
-          }
+          {!cardData ? <Actions.Skeleton /> : <Actions data={cardData} />}
         </div>
       </DialogContent>
     </Dialog>
