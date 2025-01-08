@@ -1,7 +1,8 @@
 import { database } from "@/lib/database";
 import { auth } from "@clerk/nextjs";
-import { ENTITY_TYPE } from "@prisma/client";
 import { NextResponse } from "next/server";
+
+const { ENTITY_TYPE } = database;
 
 export async function GET(
   request: Request,
