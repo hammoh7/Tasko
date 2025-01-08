@@ -74,7 +74,7 @@ const createHandler = async (
       entityTitle: card.title,
       entityType: ENTITY_TYPE.CARD,
       action: ACTION.CREATE,
-    })
+    });
   } catch (error) {
     return {
       error: "Failed to update!",
@@ -219,10 +219,10 @@ const copyHandler = async (data: CopyInputType): Promise<CopyReturnType> => {
     });
     await createActivity({
       entityTitle: card.title,
-      entityId: card.id, 
+      entityId: card.id,
       entityType: ENTITY_TYPE.CARD,
       action: ACTION.CREATE,
-    })
+    });
   } catch (error) {
     return {
       error: `Failed to copy: ${(error as Error).message}`,
